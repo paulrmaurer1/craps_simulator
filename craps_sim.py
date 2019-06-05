@@ -140,4 +140,4 @@ def crapsRoiSim_v2(numShooters):
 
 #crapsTestSim_v2(3)
 #crapsRoiSim_v2(1000)
-crapsSessionSim_v2(1000)
+crapsSessionSim_v2(100)
