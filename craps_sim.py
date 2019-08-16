@@ -28,7 +28,7 @@ def crapsSessionSim_v2(numSessions):
 	starting_pot = 300  # Starting amount with which to bet
 	right_way = False  # True = bet "Do"/Pass/Come side; False = bet "Don't" Pass/Come side
 	print_results = False  # Print results of each roll; good to use while testing
-	plot_results = False # Plot results of each session in pylab
+	plot_results = True # Plot results of each session in pylab
 	walk_away_pot_low = 150  # Pot amount under which walk away from table, i.e. end of session
 	walk_away_pot_high = 400  # Pot amount above which walk away from table, i.e. end of session
 	
@@ -136,8 +136,8 @@ def crapsRoiSim_v2(numShooters):
 	print('  Mean ROI = {}  ROI Std. Dev. = {}'.format(meanROI, ROI_sigma))
 
 
-# Uncomment module that should be executed when 'python3 craps_sim.py' is run from the command line
+# Uncomment module that should be executed when 'python craps_sim.py' is run from the command line
 
 #crapsTestSim_v2(3)
 #crapsRoiSim_v2(1000)
-crapsSessionSim_v2(100)
+crapsSessionSim_v2(10)
