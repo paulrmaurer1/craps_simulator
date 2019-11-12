@@ -42,7 +42,6 @@ class CrapsGame(object):
 		Each shooter_rolls function ends when either a 7/11 or 2/3/12 is thrown on first roll
 		or point is established then thrown again or crapped (i.e. roll 7)
 		New pass line and don't pass line bets are made during each shooter_rolls function
-		working - indicates whether odds are working on the Come Out or Opening Roll
 		"""
 
 		"""Shooter Roll counters &  tracking variables"""
@@ -144,7 +143,7 @@ class CrapsGame(object):
 				
 
 				if self.print_results:
-					input ('When ready to roll, hit RETURN..')
+					# input ('When ready to roll, hit RETURN..')
 					print ()
 					print ('**************************************')
 					print ('*...Clean Roll #{}: ******** {} ********'.format(str(num_throws_clean),str(throw)))

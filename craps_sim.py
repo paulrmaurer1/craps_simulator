@@ -13,6 +13,34 @@ def crapsTestSim_v2(numRolls):
 	for t in range(numRolls):
 		c.shooter_rolls(right_way)
 
+def crapsTestSim_v3(numSessions):
+	"""Play numSessions sessions.  Each session consists of x shooter rolls until either the pot_low or pot_high amount is reached"""
+	minimum_bet = 5  # Minimium bet to place on the Pass/Don't Pass & Come/Don't Come lines
+	odds_bet = 10  # Odds bet to place behind the Pass/Don't Pass & Come/Don't Come lines
+	starting_pot = 300  # Starting amount with which to bet
+	right_way = False  # True = bet "Do"/Pass/Come side; False = bet "Don't" Pass/Come side
+	print_results = True  # Print results of each roll; good to use while testing
+	walk_away_pot_low = 150  # Pot amount under which walk away from table, i.e. end of session
+	walk_away_pot_high = 450  # Pot amount above which walk away from table, i.e. end of session
+	
+	for t in range(numSessions):
+		num_shooters = 0
+		c = craps_v2.CrapsGame(minimum_bet, odds_bet, starting_pot, print_results)
+		pot_tracker = []
+		roll_tracker = []
+		while c.potamountleft() > walk_away_pot_low and c.potamountleft() < walk_away_pot_high:
+			""" 
+			Ensure that finish a shooter turn to completion, i.e. craps out, before evaluating pot_amount
+			So that there are no Come or Don't Come Bets left on the table
+			"""
+			while c.get_point_crapped() == False and c.potamountleft() > walk_away_pot_low and c.potamountleft() < walk_away_pot_high:
+				c.shooter_rolls(right_way)
+			c.reset_point_crapped()
+			num_shooters += 1
+
+		print('Session #{}: # Shooters = {}, Ending Pot Amount = ${}'.format(t+1, num_shooters, c.potamountleft()))
+	
+
 def crapsSessionSim_v2(numSessions):
 	"""Play numSessions sessions.  Each session consists of x shooter rolls until either the pot_low or pot_high amount is reached"""
 	games_won, games_lost = [], []
@@ -30,7 +58,7 @@ def crapsSessionSim_v2(numSessions):
 	print_results = False  # Print results of each roll; good to use while testing
 	plot_results = True # Plot results of each session in pylab
 	walk_away_pot_low = 150  # Pot amount under which walk away from table, i.e. end of session
-	walk_away_pot_high = 400  # Pot amount above which walk away from table, i.e. end of session
+	walk_away_pot_high = 450  # Pot amount above which walk away from table, i.e. end of session
 	
 	num_wins = 0
 	
@@ -44,13 +72,11 @@ def crapsSessionSim_v2(numSessions):
 			Ensure that finish a shooter turn to completion, i.e. craps out, before evaluating pot_amount
 			So that there are no Come or Don't Come Bets left on the table
 			"""
-			while c.get_point_crapped() == False:
+			while c.get_point_crapped() == False and c.potamountleft() > walk_away_pot_low and c.potamountleft() < walk_away_pot_high:
 				c.shooter_rolls(right_way)
 			c.reset_point_crapped()
 			num_shooters += 1
-			# if c.get_point_thrown():
-			# 	num_come_bets_left.append(c.get_num_oddsbets())
-			# 	amount_come_bets_left.append(c.get_oddsbets_totals())
+
 			if plot_results:
 				pot_tracker.append(c.potamountleft())
 				roll_tracker.append(num_shooters)
@@ -91,7 +117,8 @@ def crapsSessionSim_v2(numSessions):
 
 	if plot_results:
 		max_pot = max(pot_when_win)
-		min_pot = min(pot_when_lose)
+		# min_pot = min(pot_when_lose)
+		min_pot = 0
 		max_rolls = max(max(shooters_when_win), max(shooters_when_lose))
 		craps_plot.plot_sessions(shooter_pot_values, shooter_roll_values, max_pot, min_pot, max_rolls)
 
@@ -104,10 +131,51 @@ def crapsSessionSim_v2(numSessions):
 	# print ('   Average Come bets left after point thrown is: ', avg_come_bets_left, 'Avg Come bets $$ after point thrown = $', avg_come_bets_amounts)
 	# print ('   Avg shooter rolls that point is thrown is: ', avg_times_points_thrown)
 
-def crapsRoiSim_v2(numShooters):
-	"""Play numShooters sessions. Each session ends when a single Shooter craps out after having established a point"""
+def crapsRoiSim_v2(numSessions):
+	"""Play numShooters sessions. Each session ends when a Shooter craps out, i.e. rolls 7, after having established a point"""
 	ROIPerShooter = []
 	EndingPotAmount = []
+	NumberShooters = []
+
+	minimum_bet = 5  # Minimium bet to place on the Pass/Don't Pass & Come/Don't Come lines
+	odds_bet = 10  # Odds bet to place behind the Pass/Don't Pass & Come/Don't Come lines
+	starting_pot = 300  # Starting amount with which to bet
+	right_way = True  # True = bet "Do"/Pass/Come side; False = bet "Don't" Pass/Come side
+	print_results = False  # Print results of each roll; good to use while testing
+	num_points_crapped = 5  # The number of crap out events a player stays at the table
+
+	for t in range(numSessions):
+		num_shooters = 0
+		c = craps_v2.CrapsGame(minimum_bet, odds_bet, starting_pot, print_results)
+		for u in range(num_points_crapped):
+			while c.get_point_crapped() == False:
+				c.shooter_rolls(right_way)
+				num_shooters += 1
+				# print ('Shooter_rolls event #:{}'.format(num_shooters))
+			c.reset_point_crapped()
+
+		ROIPerShooter.append((c.potamountleft()-starting_pot)/starting_pot)
+		EndingPotAmount.append(c.potamountleft())
+		NumberShooters.append(num_shooters)
+		# print ('Pot Amount at end of Shooter #{} session: ${}  # shooter_rolls: {}'.format(t+1, c.potamountleft(), num_shooters))
+
+	meanROI = str(round(100*numpy.average(ROIPerShooter), 4)) + '%'
+	ROI_sigma = str(round(100*numpy.std(ROIPerShooter), 4)) + '%'
+	meanEndingPotAmount = str(round(numpy.average(EndingPotAmount), 2))
+	EndingPotAmount_sigma = str(round(numpy.std(EndingPotAmount), 2))
+	AvgNumberShooters = str(round(numpy.average(NumberShooters),1))
+	
+	print('For {} Sessions, Average Ending Pot Amount = ${} Pot Amount Std. Dev. = ${}'.format(numSessions, meanEndingPotAmount, EndingPotAmount_sigma))
+	print('  Mean ROI = {}  ROI Std. Dev. = {}'.format(meanROI, ROI_sigma))
+	print('  Average # shooters per session = {}'.format(AvgNumberShooters))
+
+def crapsRoiSim_v3(numSimulations):
+	"""Based on a set number of Simulations, run an increasing # of sessions* and determine STD of ending pot amount"""
+	"""   *session ends when a Shooter craps out after having established a point """
+	AvgEndingPotAmount = []
+	HighEndingPotAmount = [] # 2 standard deviations above average, i.e. upper bound of 95%
+	LowEndingPotAmount = [] # 2 standard deviations below average, i.e. lower bound of 95%
+	NumberSessions = [] # Number of sessions played, x-axis
 
 	minimum_bet = 5  # Minimium bet to place on the Pass/Don't Pass & Come/Don't Come lines
 	odds_bet = 10  # Odds bet to place behind the Pass/Don't Pass & Come/Don't Come lines
@@ -115,29 +183,33 @@ def crapsRoiSim_v2(numShooters):
 	right_way = True  # True = bet "Do"/Pass/Come side; False = bet "Don't" Pass/Come side
 	print_results = False  # Print results of each roll; good to use while testing
 
-	for t in range(numShooters):
-		num_shooters = 0
-		c = craps_v2.CrapsGame(minimum_bet, odds_bet, starting_pot, print_results)
-		while c.get_point_crapped() == False:
-			c.shooter_rolls(right_way)
-			num_shooters += 1
-			# print ('Shooter_rolls event #:{}'.format(num_shooters))
+	for y in range(5, 50, 5):
+		NumberSessions.append(y)
+		EndingPotAmount = []
+		for x in range(numSimulations):
+			for t in range(y):
+				c = craps_v2.CrapsGame(minimum_bet, odds_bet, starting_pot, print_results)
+				while c.get_point_crapped() == False:
+					c.shooter_rolls(right_way)
+				EndingPotAmount.append(c.potamountleft())
+		
+		AvgPotAmount = round(numpy.average(EndingPotAmount),2)
+		AvgEndingPotAmount.append(AvgPotAmount)
+		HighEndingPotAmount.append(round(AvgPotAmount + 2 * numpy.std(EndingPotAmount), 2))
+		LowEndingPotAmount.append(round(AvgPotAmount - 2 * numpy.std(EndingPotAmount), 2))
 
-		ROIPerShooter.append((c.potamountleft()-starting_pot)/starting_pot)
-		EndingPotAmount.append(c.potamountleft())
-		# print ('Pot Amount at end of Shooter #{} session: ${}  # shooter_rolls: {}'.format(t+1, c.potamountleft(), num_shooters))
-
-	meanROI = str(round((100*sum(ROIPerShooter)/numShooters), 4)) + '%'
-	ROI_sigma = str(round(100*numpy.std(ROIPerShooter), 4)) + '%'
-	meanEndingPotAmount = str(round((sum(EndingPotAmount)/numShooters), 2))
-	EndingPotAmount_sigma = str(round(numpy.std(EndingPotAmount), 2))
-	
-	print('For {} Shooters, Average Ending Pot Amount = ${} Pot Amount Std. Dev. = ${}'.format(numShooters, meanEndingPotAmount, EndingPotAmount_sigma))
-	print('  Mean ROI = {}  ROI Std. Dev. = {}'.format(meanROI, ROI_sigma))
+	print(AvgEndingPotAmount)
+	print(HighEndingPotAmount)
+	print(LowEndingPotAmount)
+	print(NumberSessions)
 
 
 # Uncomment module that should be executed when 'python craps_sim.py' is run from the command line
 
 #crapsTestSim_v2(3)
+# crapsTestSim_v3(1)
+
+crapsSessionSim_v2(1000)
+
 #crapsRoiSim_v2(1000)
-crapsSessionSim_v2(10)
+#crapsRoiSim_v3(10)

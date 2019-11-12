@@ -25,11 +25,11 @@ python craps_sim.py
 ## Other Files
 <b>craps.py</b> - module where the main class, 'CrapsGame', resides.  The key method, 'shooter_rolls' contains all the logic and configurable settings for the craps strategy. Other functions are included to produce statistics.
 
-<b>craps_bets.py</b> - module where all methods for making, placing, and laying/removing odds bets located.  Currently, only the following bets are supported: Pass Line, Don't Pass Line, Come Line, Don't Come Line
+<b>craps_bets.py</b> - module where all methods for making, placing, and laying/removing odds bets located. Player $$ on table and in rail are tracked within each method.  Currently, the following bets are supported: Bet Pass Line, Bet Don't Pass Line, Place Pass Line Odds, Place Don't Pass Line Odds, Pay Pass Line, Pay Don't Pass Line; Bet Come Line, Bet Don't Come Line, Place Come Bet, Place Don't Come Bet, Place/Remove Come Bet Odds, Place/Remove Don't Come Bet Odds, Pay Come Bet, Pay Don't Come Bet
 
-<b>craps_methods.py</b> - module where standard craps functions for rolling and Odds bet placing are contained, e.g. rollDie, payOdds, placeOdds
+<b>craps_methods.py</b> - module where functions for die rolling, Odds placing and Odds paying located, e.g. rollDie, payOdds, placeOdds
 
-<b>linebet.py</b> - module where the 'LineBet' class is contained with functions for interacting with each Pass & Pass Line bet and Come & Don't Come bet
+<b>linebet.py</b> - module where the 'LineBet' class is contained with functions for interacting with each Pass & Pass Line bet and Come & Don't Come bet based on established Point
 
 <b>print_methods.py</b> - module where status printing methods to support the craps_roll function are located. 
 

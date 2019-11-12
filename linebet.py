@@ -1,6 +1,6 @@
 import craps_methods
 
-#This file contains objects and methods needed to mode a Come or Don't Come bet and will be called
+#This file contains objects and methods needed to make a Pass Line, Don't Pass, Come or Don't Come bet and will be called
 #by the craps.py module
 
 class LineBet(object):
