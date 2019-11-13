@@ -56,9 +56,9 @@ def crapsSessionSim_v2(numSessions):
 	starting_pot = 300  # Starting amount with which to bet
 	right_way = False  # True = bet "Do"/Pass/Come side; False = bet "Don't" Pass/Come side
 	print_results = False  # Print results of each roll; good to use while testing
-	plot_results = True # Plot results of each session in pylab
+	plot_results = False # Plot results of each session in pylab
 	walk_away_pot_low = 150  # Pot amount under which walk away from table, i.e. end of session
-	walk_away_pot_high = 450  # Pot amount above which walk away from table, i.e. end of session
+	walk_away_pot_high = 550  # Pot amount above which walk away from table, i.e. end of session
 	
 	num_wins = 0
 	
@@ -203,13 +203,62 @@ def crapsRoiSim_v3(numSimulations):
 	print(LowEndingPotAmount)
 	print(NumberSessions)
 
+def crapsWinProbabilities(numSessions):
+	"""Play numSessions sessions.  Each session consists of x shooter rolls until either the pot_low or pot_high amount is reached"""
+	"""Collect win % for various win thresholds above swtartig_pot """
+	win_percentage = []
 
-# Uncomment module that should be executed when 'python craps_sim.py' is run from the command line
+	minimum_bet = 5  # Minimium bet to place on the Pass/Don't Pass & Come/Don't Come lines
+	odds_bet = 10  # Odds bet to place behind the Pass/Don't Pass & Come/Don't Come lines
+	starting_pot = 300  # Starting amount with which to bet
+	print_results = False  # Print results of each roll; good to use while testing
+	
+	right_way = True  # True = bet "Do"/Pass/Come side; False = bet "Don't" Pass/Come side
+	plot_results = False # Plot results of each session in pylab
+	walk_away_pot_low = 150  # Pot amount under which walk away from table, i.e. end of session
+	walk_away_pot_high_start = 25  # Pot amount above which walk away from table, i.e. end of session
+	walk_away_pot_high_end = 250  # Pot amount above which walk away from table, i.e. end of session
+	walk_away_pot_high_step = 25  # Pot amount above which walk away from table, i.e. end of session
+	
+	for w in range(walk_away_pot_high_start, walk_away_pot_high_end+walk_away_pot_high_step, walk_away_pot_high_step):
+		num_wins = 0
+		walk_away_pot_high = starting_pot + w
+		for t in range(numSessions):
+			c = craps_v2.CrapsGame(minimum_bet, odds_bet, starting_pot, print_results)
+			while c.potamountleft() > walk_away_pot_low and c.potamountleft() < walk_away_pot_high:
+				""" 
+				Ensure that finish a shooter turn to completion, i.e. craps out, before evaluating pot_amount
+				So that there are no Come or Don't Come Bets left on the table
+				"""
+				while c.get_point_crapped() == False and c.potamountleft() > walk_away_pot_low and c.potamountleft() < walk_away_pot_high:
+					c.shooter_rolls(right_way)
+				c.reset_point_crapped()
+			
+			"""
+			Determine whether Seesion was a winning one and increment num_wins counter
+			"""
+			if c.potamountleft() >= walk_away_pot_high:
+				num_wins += 1
 
-#crapsTestSim_v2(3)
+		winning_perc = str(round(100*num_wins/numSessions, 2)) + '%'
+		print ('Win Threshold ${} completed.. Win % = {}'.format(w, winning_perc))
+		win_percentage.append(winning_perc)
+
+	"""
+	Output win_percentage list to file
+	"""
+	with open('test_file1.txt', 'w') as f:
+		for item in win_percentage:
+			f.write("%s\n" % item)
+
+		
+####################################################################################################
+# Uncomment module that should be executed when 'python craps_sim.py' is run from the command line #
+####################################################################################################
+
+# crapsTestSim_v2(3)
 # crapsTestSim_v3(1)
-
-crapsSessionSim_v2(1000)
-
-#crapsRoiSim_v2(1000)
-#crapsRoiSim_v3(10)
+# crapsSessionSim_v2(5000)
+# crapsRoiSim_v2(1000)
+# crapsRoiSim_v3(10)
+crapsWinProbabilities(5000)
