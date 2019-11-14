@@ -4,7 +4,8 @@ Craps Simulator
 Python (developed in V 3.5.0) program that simulates a unique craps strategy whereby minimum table bet amounts are placed on both the Pass & Don't Pass lines to start. Then after a point is established, Come & Don't Come bets are placed to establish more points.  Configurable settings are available for the number of consecutive clean rolls before Odds are placed and the maximum number of Come Bet points that can be made.  Single testing session; multiple sessions with 'walk-away' upper & lower $$$ limits; and multiple session with % ROI results simulation modes are available.
 
 ## Help and docs
-- [CrapsGame.shooter_rolls() Method Flow](docs/craps_simulator_shooter_rolls_flow.pdf)
+- [Craps Simulator Code Flow](docs/craps_simulator_shooter_rolls_flow.pdf) - illustration of code flow (with line #s) of CrapsGame class shooter_rolls method.
+- [Craps Simulator Outputs](docs/craps_simulator.outputs.pdf) - examples of matplotlib and statistical output.
 
 ## To Run Simulator
 1) Install [Python (V3.5.0+)](https://www.python.org/)
