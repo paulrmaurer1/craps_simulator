@@ -54,7 +54,10 @@ class CrapsGame(object):
 		###################### MAKE OPENING BETS ###############################
 		########################################################################
 				
-		""" Check to ensure have enough $$ to place initial bets & place initial bets """
+		""" Place or remove odds on Come & Don't Come Bets based on odds_on[0] if exist from prior shooter_rolls """
+		self.place_or_remove_come_bet_odds(self.odds_on[0], right_way)
+		
+		""" Check to ensure have enough $$ to place initial bets then place initial bets """
 		if self.rail_amount < (2 * self.min_bet):  
 			pass # If don't have enough to place min bet on Pass & Don't Pass Line, don't bet, pass
 		else:
@@ -62,9 +65,6 @@ class CrapsGame(object):
 			self.make_pass_line_bet()
 			""" Make Don't Pass Line Bet """
 			self.make_dp_line_bet()
-
-		""" Place or remove odds on Come Bets based on odds_on[0], Don't Come Bet Odds always working """
-		self.place_or_remove_come_bet_odds(self.odds_on[0], right_way)
 		
 		""" Print pre-opening Roll Bet positions """
 		if self.print_results:

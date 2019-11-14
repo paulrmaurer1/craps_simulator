@@ -1,5 +1,9 @@
 import random, pylab, numpy
+import matplotlib
+import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
 
+"""pylab rcParams settings"""
 #set line width
 pylab.rcParams['lines.linewidth'] = 1
 #set font size for titles 
@@ -19,6 +23,11 @@ pylab.rcParams['lines.markersize'] = 10
 #set number of examples shown in legends
 pylab.rcParams['legend.numpoints'] = 1
 
+"""matplotlib rcParams settings"""
+matplotlib.rcParams['axes.titlesize'] = 16
+matplotlib.rcParams['axes.labelsize'] = 12
+
+
 def plot_sessions (y_values_list, x_values_list, max_y, min_y, max_x):
 	"""
 	y_values_list = list of lists containing shooter ending pot amounts, e.g. [310, 350, 335, 320, 280...] for each session
@@ -36,6 +45,25 @@ def plot_sessions (y_values_list, x_values_list, max_y, min_y, max_x):
 	for x in range(len(y_values_list)):
 		yVals = pylab.array(y_values_list[x])
 		xVals = pylab.array(x_values_list[x])
-		pylab.plot(xVals, yVals, 'black')
+		pylab.plot(xVals, yVals, 'green')
 
 	pylab.show()
+
+def plot_winpercentage (win_dict):
+	"""
+
+	"""
+	y_values = list(win_dict.values())
+	x_values = list(win_dict.keys())
+
+	fig, ax = plt.subplots()
+	ax.set(xlabel = 'Walk-away Win Threshold (above $300)',
+		ylabel='Win %',
+		title='Win % vs. Walk-away Win $$$')
+	ax.yaxis.set_major_formatter(ticker.PercentFormatter())
+	ax.xaxis.set_major_formatter(ticker.FormatStrFormatter('$%1.f'))
+	ax.plot(x_values, y_values, 'go-', linewidth=2, markersize=10)
+	ax.set_ylim([0,100])
+	ax.set_xlim([0,max(x_values)*1.1])
+	ax.grid(True)
+	plt.show()
